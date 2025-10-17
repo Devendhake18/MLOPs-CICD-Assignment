@@ -1,0 +1,162 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python -m src.data_ingestion
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: e9563ccbfd02a7100831b35a8765db68
+      size: 132
+      isexec: true
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: af66843ef50d79515c1ea285ab282894
+      size: 3652
+      isexec: true
+    outs:
+    - path: data/raw/test_data.csv
+      hash: md5
+      md5: e656440aaeae44ffb3aa5b6ab4b0d781
+      size: 95062
+      isexec: true
+    - path: data/raw/train_data.csv
+      hash: md5
+      md5: 5834df7d942ee44b5356aa91ca78f130
+      size: 384210
+      isexec: true
+  data_preprocessing:
+    cmd: python -m src.data_preprocessing
+    deps:
+    - path: data/raw/test_data.csv
+      hash: md5
+      md5: e656440aaeae44ffb3aa5b6ab4b0d781
+      size: 95062
+      isexec: true
+    - path: data/raw/train_data.csv
+      hash: md5
+      md5: 5834df7d942ee44b5356aa91ca78f130
+      size: 384210
+      isexec: true
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: e3c45558f5d76fe985e429aa6a27fa20
+      size: 4061
+      isexec: true
+    outs:
+    - path: data/interim/test_processed.csv
+      hash: md5
+      md5: 71d828e8812d9b391676e11269186580
+      size: 57370
+      isexec: true
+    - path: data/interim/train_processed.csv
+      hash: md5
+      md5: 3fb266466fea3579f982aa7d2c3f7e47
+      size: 213383
+      isexec: true
+  feature_engineering:
+    cmd: python -m src.feature_engineering
+    deps:
+    - path: data/interim/test_processed.csv
+      hash: md5
+      md5: 71d828e8812d9b391676e11269186580
+      size: 57370
+      isexec: true
+    - path: data/interim/train_processed.csv
+      hash: md5
+      md5: 3fb266466fea3579f982aa7d2c3f7e47
+      size: 213383
+      isexec: true
+    - path: params.yaml
+      hash: md5
+      md5: e9563ccbfd02a7100831b35a8765db68
+      size: 132
+      isexec: true
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: b9252fc9466b6089ca3ccdacb4516f3d
+      size: 4003
+      isexec: true
+    outs:
+    - path: data/interim/vectorizer.pkl
+      hash: md5
+      md5: 4a8e7b70ed97586f369be5b0204e85c9
+      size: 107293
+      isexec: true
+    - path: data/processed/test_tfidf.csv
+      hash: md5
+      md5: 50ff0ca63bb586f54f400c8bc5cd108d
+      size: 13340064
+      isexec: true
+    - path: data/processed/train_tfidf.csv
+      hash: md5
+      md5: 957a385c36cd3cdc59836bedc879ac3a
+      size: 50292551
+      isexec: true
+  model_building:
+    cmd: python -m src.model_building
+    deps:
+    - path: data/interim/vectorizer.pkl
+      hash: md5
+      md5: 4a8e7b70ed97586f369be5b0204e85c9
+      size: 107293
+      isexec: true
+    - path: data/processed/train_tfidf.csv
+      hash: md5
+      md5: 957a385c36cd3cdc59836bedc879ac3a
+      size: 50292551
+      isexec: true
+    - path: params.yaml
+      hash: md5
+      md5: e9563ccbfd02a7100831b35a8765db68
+      size: 132
+      isexec: true
+    - path: src/model_building.py
+      hash: md5
+      md5: 630f2b88624568934b2f00784542e1f6
+      size: 4134
+      isexec: true
+    outs:
+    - path: model/model.pkl
+      hash: md5
+      md5: 9f0ccf60499a0fe373ab0463153f4e18
+      size: 16125693
+      isexec: true
+    - path: model/vectorizer.pkl
+      hash: md5
+      md5: 4a8e7b70ed97586f369be5b0204e85c9
+      size: 107293
+      isexec: true
+  model_evaluation:
+    cmd: python -m src.model_evaluation
+    deps:
+    - path: data/processed/test_tfidf.csv
+      hash: md5
+      md5: 50ff0ca63bb586f54f400c8bc5cd108d
+      size: 13340064
+      isexec: true
+    - path: model/model.pkl
+      hash: md5
+      md5: 9f0ccf60499a0fe373ab0463153f4e18
+      size: 16125693
+      isexec: true
+    - path: params.yaml
+      hash: md5
+      md5: e9563ccbfd02a7100831b35a8765db68
+      size: 132
+      isexec: true
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 4a389fbdb8262a152c515878c897e30f
+      size: 4560
+      isexec: true
+    outs:
+    - path: dvclive
+      hash: md5
+      md5: 8e15498379159b5d90272af603905111.dir
+      size: 254
+      nfiles: 5
+    - path: reports/metrics.json
+      hash: md5
+      md5: c92e08676541bd81fbc126f89703a507
+      size: 140
+      isexec: true
