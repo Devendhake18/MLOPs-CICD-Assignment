@@ -1,0 +1,85 @@
+Paste :
+AWS Account ID : 
+AWS Secret ID :
+AWS Secret Key :
+S3 URL : 
+
+Create a GitHub repo for project
+
+Edit aws\github-oidc-trust-policy.json with AWS Account ID
+Edit aws\dvc-s3-policy.json with S3 URL
+
+Perform aws configure
+
+aws iam create-role \
+  --role-name GitHubActionsOIDCRole \
+  --assume-role-policy-document f aws/github-oidc-trust-policy.json
+
+aws iam attach-role-policy \
+  --role-name GitHubActionsOIDCRole \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+aws iam attach-role-policy \
+  --role-name GitHubActionsOIDCRole \
+  --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+
+
+Check and edit user roles 
+
+Add following to Repo -> Settings -> Actions -> Repo Variables
+
+AWS_ROLE_TO_ASSUME = arn:aws:iam::<ACCOUNT_ID>:role/GitHubActionsOIDCRole
+AWS_REGION = us-east-1
+DVC_S3_URL = bucket path
+
+
+
+On local do :
+git init
+
+dvc init
+
+git add .
+
+git commit -m ""
+
+dvc repro
+
+dvc commit
+
+dvc push
+
+git add .
+
+git commit - m ""
+
+git push -u origin main
+
+
+Create EC2 instance Amazon Linux with HTTP access
+Launch Instance and Connect
+
+Type Commands
+sudo yum update -y
+sudo yum install docker -y
+sudo service docker start
+sudo usermod -aG docker ec2-user
+exit
+
+Connect
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+
+docker pull <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/spam-classifier:latest
+
+docker run -p 80:8000 <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/spam-classifier:latest
+
+
+On Local
+curl -X POST http://URL/predict \
+  -H "Content-Type: application/json" \
+  -d '{"text":"This is spam"}
+
+
+
+
+

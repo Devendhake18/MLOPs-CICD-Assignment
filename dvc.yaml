@@ -1,0 +1,62 @@
+stages:
+  data_ingestion:
+    cmd: python -m src.data_ingestion
+    deps:
+    - src/data_ingestion.py
+    - params.yaml
+    outs:
+    - data/raw/train_data.csv
+    - data/raw/test_data.csv
+
+  data_preprocessing:
+    cmd: python -m src.data_preprocessing
+    deps:
+    - src/data_preprocessing.py
+    - data/raw/train_data.csv
+    - data/raw/test_data.csv
+    outs:
+    - data/interim/train_processed.csv
+    - data/interim/test_processed.csv
+
+  feature_engineering:
+    cmd: python -m src.feature_engineering
+    deps:
+    - src/feature_engineering.py
+    - data/interim/train_processed.csv
+    - data/interim/test_processed.csv
+    - params.yaml
+    outs:
+    - data/processed/train_tfidf.csv
+    - data/processed/test_tfidf.csv
+    - data/interim/vectorizer.pkl
+
+  model_building:
+    cmd: python -m src.model_building
+    deps:
+    - src/model_building.py
+    - data/interim/vectorizer.pkl
+    - data/processed/train_tfidf.csv
+    - params.yaml
+    outs:
+    - model/model.pkl
+    - model/vectorizer.pkl
+
+  model_evaluation:
+    cmd: python -m src.model_evaluation
+    deps:
+    - src/model_evaluation.py
+    - model/model.pkl
+    - data/processed/test_tfidf.csv
+    - params.yaml
+    outs:
+    - dvclive
+    metrics:
+    - reports/metrics.json:
+        cache: false
+params:
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step
